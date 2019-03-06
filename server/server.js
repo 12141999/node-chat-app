@@ -4,6 +4,8 @@ const ejs = require('ejs');
 const socketIO = require('socket.io');
 const http = require('http');
 
+const { generateMessage} = require('./util/message');
+
 const publicPath = path.join(__dirname + '../views');
 let app = express();
 app.use(express.static(publicPath));
@@ -19,26 +21,14 @@ io.on('connection' , (socket) => {
         socket.emit(s);
       }
 
-    // socket.emit('newMessage' , {
-    //     from : "robinjain9587@gmail.com",
-    //     to : "the client",
-    //     createdAt : "23.05 PM"
-    // });
+    socket.emit('newMessage' , generateMessage("robinjain9587@gmail.com" , "hi client"));
 
-    // socket.on('clientMessage' , (data) => {
-    //     console.log(data);
-    //     io.emit('newMessage' , {
-    //         from : 'robin jain',
-    //         text : 'welcome to my chat app',
-    //         createdAt : new Date().getTime()
-    //     });
-    // });
-
-    socket.broadcast.emit('newMessage' , {
-        from : 'admin',
-        text : 'i have done it',
-        createdAt : new Date().getTime()
+    socket.on('createMessage' , (data) => {
+        console.log(data);
+        io.emit('newMessage' , generateMessage(data.from , data.text));
     });
+
+    socket.broadcast.emit('newMessage' , generateMessage("robin jain" , "welcome in my chat-app"));
     
     socket.on('disconnect' , () => {
         console.log('user is disconnect');
