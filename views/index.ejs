@@ -4,6 +4,19 @@
     <head>
         <body>
             <p>welcome to my chat-app</p>
+            <script src="/socket.io/socket.io.js"></script>
+            <script>
+                let socket = io();
+
+                socket.on('connect' , () => {
+                    console.log('connect to the server');
+                });
+
+                socket.on('disconnect' , () => {
+                    console.log('disconnect to the server');
+                });
+
+            </script>
         </body>
     </head>
 </html>
