@@ -1,17 +1,4 @@
-<!DOCTYPE html>
-
-<html>
-
-<head>
-  <meta charset="utf-8">
-</head>
-
-<body>
-  <p>Welcome to the chat app</p>
-
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-      var socket = io();
+var socket = io();
 
 socket.on('connect' , function (){
     console.log('connect to the server');
@@ -33,8 +20,3 @@ socket.on('disconnect' , function (){
 socket.on('newMessage' , function (data) {
     console.log(data);
 });
-  </script>
-  <!-- <script src="/js/index.js"></script> -->
-</body>
-
-</html>
