@@ -3,7 +3,7 @@
 var socket = io();
 
 socket.on('connect' , function (){
-console.log('connect to the server');
+    console.log('connect to the server');
 });
 
 socket.emit('clientMessage' , {
@@ -14,27 +14,31 @@ socket.emit('clientMessage' , {
 
 
 socket.on('disconnect' , function (){
-console.log('disconnect to the server');
+    console.log('disconnect to the server');
 });
 
 socket.on('newMessage' , function (message) {
-console.log('newMessage' , message);
-let formatedTime = moment(message.createdAt).format('h:mm a');
-let li = jQuery('<li></li>');
-li.text(`${message.from} ${formatedTime} : ${message.text}`);
-
-jQuery('#messages').append(li); 
+    var formattedTime = moment(message.createdAt).format('h:mm a');
+    var template = jQuery('#message-template').html();
+    var html = Mustache.render(template, {
+      text: message.text,
+      from: message.from,
+      createdAt: formattedTime
+    });
+  
+    jQuery('#messages').append(html); 
 });
 
-socket.on('newLocationMessage' , function (locationMessage){
-console.log('newLocationMessage' , locationMessage);
-let formatedTime = moment(locationMessage.createdAt).format('h:mm a');
-let li = jQuery('<li></li>');
-let a = jQuery('<a target="_blank">click here to see my current location</a>');
-li.text(`${locationMessage.from} ${formatedTime}: `);
-a.attr('href' , locationMessage.url );
-li.append(a);
-jQuery('#messages').append(li);
+socket.on('newLocationMessage' , function (message){
+    var formattedTime = moment(message.createdAt).format('h:mm a');
+    var template = jQuery('#location-message-template').html();
+    var html = Mustache.render(template, {
+      from: message.from,
+      url: message.url,
+      createdAt: formattedTime
+    });
+  
+    jQuery('#messages').append(html);
 });
 
 jQuery('#message-form').on('submit' , function(e){
@@ -42,34 +46,34 @@ e.preventDefault();
 
 let messageTextbox = jQuery('[name=message]');
 
-socket.emit('createMessage' , {
-  from : 'User',
-  text : messageTextbox.val()    
-} , function() {
-  messageTextbox.val('')
-});
+    socket.emit('createMessage' , {
+    from : 'User',
+    text : messageTextbox.val()    
+    } , function() {
+    messageTextbox.val('')
+    });
 });
 
 let locationButton = jQuery('#geo-location');
 
 
 locationButton.on('click' , function() {
-if(!navigator.geolocation)
-{
-  return alert('geolocation does not sppourt your browser');
-}
+    if(!navigator.geolocation)
+    {
+    return alert('geolocation does not sppourt your browser');
+    }
 
-locationButton.attr('disabled' , 'disabled').text('sending location...');
+    locationButton.attr('disabled' , 'disabled').text('sending location...');
 
-navigator.geolocation.getCurrentPosition(function(position) {
-  locationButton.removeAttr('disabled').text('send location');
-  socket.emit('createLocationMessage' , {
-      latitude : position.coords.latitude,
-      longitude : position.coords.longitude
-  });
-} , function() {
-  locationButton.removeAttr('disabled').text('send location');
-  alert('unable to fetch location');
-});
+    navigator.geolocation.getCurrentPosition(function(position) {
+        locationButton.removeAttr('disabled').text('send location');
+            socket.emit('createLocationMessage' , {
+                latitude : position.coords.latitude,
+                longitude : position.coords.longitude
+            });
+        } , function() {
+            locationButton.removeAttr('disabled').text('send location');
+            alert('unable to fetch location');
+        });
 
 });
