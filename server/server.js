@@ -12,6 +12,9 @@ let app = express();
 app.use(express.static(publicPath));
 //app.set("view engine" , "ejs");
 
+app.use(bodyParser.urlencoded({extended : true}));
+app.use('', express.static(path.join(__dirname + '')));
+
 let server = http.createServer(app);
 let io = socketIO(server);
 
@@ -48,6 +51,18 @@ const port = process.env.PORT || 3001 ;
 app.get("/" , (req,res) => {
     res.render("index.ejs");
 });
+
+app.post('/chat' , (req,res) => {
+    console.log(req.body);
+    let username = req.body.username;
+    let room = req.body.room;
+    let data = { username : username , room : room };
+    res.render("chat.ejs" , { data : data });
+});
+
+// app.get("/chat" , (req,res) => {
+
+// });
 
 server.listen(port , () => {
     console.log('server is started');
