@@ -18,6 +18,8 @@
     <button>Send</button>
   </form>
 
+  <button id="geo-location">send location</button>
+
   <script src="/socket.io/socket.io.js"></script>
   <!-- <script src="./jquery-3.3.1.min.js"></script> -->
   <script>
@@ -46,6 +48,16 @@ socket.on('newMessage' , function (message) {
     jQuery('#messages').append(li); 
 });
 
+socket.on('newLocationMessage' , function (locationMessage){
+    console.log('newLocationMessage' , locationMessage);
+    let li = jQuery('<li></li>');
+    let a = jQuery('<a target="_blank">Thats my location</a>');
+    li.text(`${locationMessage.from} : `);
+    a.attr('href' , locationMessage.url );
+    li.append(a);
+    jQuery('#messages').append(li);
+});
+
 jQuery('#message-form').on('submit' , function(e){
     e.preventDefault();
 
@@ -55,6 +67,24 @@ jQuery('#message-form').on('submit' , function(e){
     } , function() {
 
     });
+});
+
+let locationButton = jQuery('#geo-location');
+locationButton.on('click' , function() {
+    if(!navigator.geolocation)
+    {
+        return alert('geolocation does not sppourt your browser');
+    }
+
+    navigator.geolocation.getCurrentPosition(function(position) {
+        socket.emit('createLocationMessage' , {
+            latitude : position.coords.latitude,
+            longitude : position.coords.longitude
+        });
+    } , function() {
+        alert('unable to fetch location');
+    });
+
 });
 
   </script>

@@ -4,7 +4,7 @@ const ejs = require('ejs');
 const socketIO = require('socket.io');
 const http = require('http');
 
-const { generateMessage} = require('./util/message');
+const { generateMessage , generateLocationMessage } = require('./util/message');
 
 const publicPath = path.join(__dirname + '../views');
 let app = express();
@@ -26,6 +26,11 @@ io.on('connection' , (socket) => {
     socket.on('createMessage' , (data) => {
         console.log(data);
         io.emit('newMessage' , generateMessage(data.from , data.text));
+    });
+
+    socket.on('createLocationMessage' , (location) => {
+        console.log(location);
+        io.emit('newLocationMessage' , generateLocationMessage('admin' , location.latitude , location.longitude ));
     });
 
     socket.broadcast.emit('newMessage' , generateMessage("robin jain" , "welcome in my chat-app"));
