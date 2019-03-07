@@ -4,6 +4,20 @@ var socket = io();
 
 socket.on('connect' , function (){
     console.log('connect to the server');
+
+    let params = jQuery.deparam(window.location.search);
+
+    socket.emit('join' , params , function(err) {
+        if(err)
+        {
+            alert(err);
+            window.location.search = '/';
+        }
+        else{
+            console.log('no error');
+        }
+    });
+
 });
 
 function scrollToBottom () {
@@ -21,6 +35,17 @@ function scrollToBottom () {
       messages.scrollTop(scrollHeight);
     }
   }
+
+
+socket.on('updateList' , function(users){
+    var ol = jQuery('<ol></ol>');
+
+    users.forEach(function (user) {
+        ol.append(jQuery('<li></li>').text(user));
+    });
+
+    jQuery('#users').html(ol);
+});
 
 socket.emit('clientMessage' , {
     from : "client123@gmail.com" ,
@@ -65,7 +90,6 @@ e.preventDefault();
 let messageTextbox = jQuery('[name=message]');
 
     socket.emit('createMessage' , {
-    from : 'User',
     text : messageTextbox.val()    
     } , function() {
     messageTextbox.val('')
