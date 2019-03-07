@@ -3,10 +3,11 @@ const path = require('path');
 const ejs = require('ejs');
 const socketIO = require('socket.io');
 const http = require('http');
+const bodyParser = require('body-parser');
 
 const { generateMessage , generateLocationMessage } = require('./util/message');
 
-const publicPath = path.join(__dirname + '../views');
+const publicPath = path.join(__dirname + '../../views');
 let app = express();
 app.use(express.static(publicPath));
 //app.set("view engine" , "ejs");
